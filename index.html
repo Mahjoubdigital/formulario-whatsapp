@@ -25,7 +25,6 @@
             overflow: hidden;
         }
 
-        /* HEADER */
         .header {
             background: linear-gradient(135deg, #075E54 0%, #128C7E 100%);
             color: white;
@@ -53,7 +52,6 @@
             border: 1px solid rgba(255,255,255,0.25);
         }
 
-        /* PROGRESS BAR */
         .progress-container {
             padding: 25px 30px;
             background: #f8faf9;
@@ -139,7 +137,6 @@
         .progress-step.active .step-label { color: #075E54; }
         .progress-step.completed .step-label { color: #28a745; }
 
-        /* FORM BODY */
         .form-body { padding: 35px; }
 
         .form-step {
@@ -167,7 +164,6 @@
             font-size: 0.95rem;
         }
 
-        /* FORM ELEMENTS */
         .grid-2 {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -221,7 +217,6 @@
 
         textarea { resize: vertical; min-height: 90px; }
 
-        /* CHECKBOXES */
         .checkbox-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
@@ -258,7 +253,6 @@
             margin: 0;
         }
 
-        /* NAVIGATION BUTTONS */
         .step-actions {
             display: flex;
             justify-content: space-between;
@@ -297,7 +291,6 @@
             box-shadow: 0 6px 16px rgba(37, 211, 102, 0.4);
         }
 
-        /* SUMMARY */
         .summary-box {
             background: #f8faf9;
             border: 1.5px solid #d8e3df;
@@ -329,7 +322,6 @@
             font-weight: 500;
         }
 
-        /* PRIVACY */
         .privacy-box {
             background: #f0f2f5;
             border: 1px solid #d8e3df;
@@ -353,7 +345,6 @@
             transform: scale(1.2);
         }
 
-        /* SUCCESS MODAL */
         .modal-overlay {
             display: none;
             position: fixed;
@@ -435,13 +426,12 @@
         <h1>🏠 Solicitud de Búsqueda</h1>
         <p>Multiservices Immobilier Maroc</p>
         <div class="trust-badges">
-            <span class="trust-badge">🇲🇦 Especialistas en Marruecos</span>
-            <span class="trust-badge">⚡ Respuesta en 24h</span>
+            <span class="trust-badge">🇦 Especialistas en Marruecos</span>
+            <span class="trust-badge"> Respuesta en 24h</span>
             <span class="trust-badge">🔒 Datos protegidos RGPD</span>
         </div>
     </div>
 
-    <!-- BARRA DE PROGRESO -->
     <div class="progress-container">
         <div class="progress-steps">
             <div class="progress-line" id="progressLine"></div>
@@ -471,7 +461,6 @@
     <div class="form-body">
         <form id="buyerForm">
             
-            <!-- PASO 1: INFORMACIÓN PERSONAL -->
             <div class="form-step active" data-form-step="1">
                 <h2 class="step-title">Información Personal</h2>
                 <p class="step-subtitle">Comencemos con tus datos de contacto</p>
@@ -523,7 +512,6 @@
                 </div>
             </div>
 
-            <!-- PASO 2: PREFERENCIAS DE PROPIEDAD -->
             <div class="form-step" data-form-step="2">
                 <h2 class="step-title">Preferencias de Propiedad</h2>
                 <p class="step-subtitle">¿Qué tipo de propiedad buscas?</p>
@@ -598,7 +586,6 @@
                 </div>
             </div>
 
-            <!-- PASO 3: CARACTERÍSTICAS -->
             <div class="form-step" data-form-step="3">
                 <h2 class="step-title">Características Deseadas</h2>
                 <p class="step-subtitle">Selecciona las características que buscas (opcional)</p>
@@ -656,7 +643,6 @@
                 </div>
             </div>
 
-            <!-- PASO 4: CONTACTO -->
             <div class="form-step" data-form-step="4">
                 <h2 class="step-title">Preferencias de Contacto</h2>
                 <p class="step-subtitle">¿Cómo y cuándo podemos contactarte?</p>
@@ -704,7 +690,6 @@
                 </div>
             </div>
 
-            <!-- PASO 5: RESUMEN -->
             <div class="form-step" data-form-step="5">
                 <h2 class="step-title">Revisa tu Solicitud</h2>
                 <p class="step-subtitle">Confirma que todos los datos son correctos antes de enviar</p>
@@ -733,7 +718,7 @@
                         ← Modificar
                     </button>
                     <button type="submit" class="btn btn-primary">
-                         Enviar por WhatsApp
+                        📱 Enviar por WhatsApp
                     </button>
                 </div>
             </div>
@@ -741,7 +726,6 @@
     </div>
 </div>
 
-<!-- MODAL DE ÉXITO -->
 <div class="modal-overlay" id="successModal">
     <div class="modal-content">
         <div class="modal-icon">✅</div>
@@ -752,13 +736,12 @@
 </div>
 
 <script>
-    // CONFIGURACIÓN: Cambia este número por el tuyo (con código de país, sin + ni espacios)
-    const WHATSAPP_NUMBER = '212600000000'; 
+    // CONFIGURACIÓN: Tu número de WhatsApp
+    const WHATSAPP_NUMBER = '212690157092';
 
     let currentStep = 1;
     const totalSteps = 5;
 
-    // Actualizar barra de progreso
     function updateProgress() {
         const progressLine = document.getElementById('progressLine');
         const percent = ((currentStep - 1) / (totalSteps - 1)) * 100;
@@ -780,7 +763,6 @@
         });
     }
 
-    // Validar paso actual
     function validateStep(stepNum) {
         const stepContent = document.querySelector(`[data-form-step="${stepNum}"]`);
         const requiredFields = stepContent.querySelectorAll('[required]');
@@ -811,7 +793,6 @@
             }
         });
 
-        // Hacer foco en el primer campo con error
         if (firstErrorField) {
             firstErrorField.focus();
             firstErrorField.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -820,7 +801,6 @@
         return isValid;
     }
 
-    // Ir al siguiente paso
     function nextStep(stepNum) {
         if (!validateStep(currentStep)) {
             return;
@@ -835,11 +815,9 @@
             updateSummary();
         }
 
-        // Scroll suave al inicio del formulario
         document.querySelector('.form-body').scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
-    // Ir al paso anterior
     function prevStep(stepNum) {
         document.querySelector(`[data-form-step="${currentStep}"]`).classList.remove('active');
         currentStep = stepNum;
@@ -848,7 +826,6 @@
         document.querySelector('.form-body').scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
-    // Actualizar resumen
     function updateSummary() {
         const fd = new FormData(document.getElementById('buyerForm'));
         const get = (k) => fd.get(k) || 'No especificado';
@@ -856,23 +833,22 @@
 
         document.getElementById('summary-personal').innerHTML = `
             <strong>${get('nombre')}</strong><br>
-             ${get('email')} · 📱 ${get('telefono')}<br>
-            🌍 ${get('nacionalidad')} · ️ ${get('ciudad_residencia') !== 'No especificado' ? get('ciudad_residencia') : 'Sin especificar'}
+            📧 ${get('email')} · 📱 ${get('telefono')}<br>
+            🌍 ${get('nacionalidad')} · 📍 ${get('ciudad_residencia') !== 'No especificado' ? get('ciudad_residencia') : 'Sin especificar'}
         `;
 
         document.getElementById('summary-property').innerHTML = `
             🏠 <strong>${get('tipo_propiedad')}</strong> en <strong>${get('ciudad')}</strong><br>
-            💰 Precio: ${get('precio')} · 🛏️ Habitaciones: ${get('habitaciones')}
+            💰 Precio: ${get('precio')} · ️ Habitaciones: ${get('habitaciones')}
         `;
 
         document.getElementById('summary-features').innerHTML = getAll('caracteristicas');
 
         document.getElementById('summary-contact').innerHTML = `
-            📞 Contacto: ${get('contacto')} · ⏱️ Plazo: ${get('plazo')}
+             Contacto: ${get('contacto')} · ⏱️ Plazo: ${get('plazo')}
         `;
     }
 
-    // Envío del formulario
     document.getElementById('buyerForm').addEventListener('submit', function(e) {
         e.preventDefault();
 
@@ -909,11 +885,11 @@ _Enviado desde formulario web_`;
         document.getElementById('waLink').href = waUrl;
         document.getElementById('successModal').classList.add('active');
         
-        // Abrir WhatsApp automáticamente
-        window.open(waUrl, '_blank');
+        setTimeout(() => {
+            window.open(waUrl, '_blank');
+        }, 500);
     });
 
-    // Validación en tiempo real (quita el error al escribir)
     document.querySelectorAll('input, select, textarea').forEach(field => {
         field.addEventListener('input', function() {
             if (this.value.trim()) {
@@ -924,7 +900,6 @@ _Enviado desde formulario web_`;
         });
     });
 
-    // Feedback visual para checkboxes
     document.querySelectorAll('.check-item input[type="checkbox"]').forEach(checkbox => {
         checkbox.addEventListener('change', function() {
             if (this.checked) {
@@ -935,7 +910,6 @@ _Enviado desde formulario web_`;
         });
     });
 
-    // Inicializar
     updateProgress();
 </script>
 
