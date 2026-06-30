@@ -1,0 +1,943 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solicitud de Búsqueda | Multiservices Immobilier Maroc</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #f8faf9 0%, #eef5f2 100%);
+            color: #1a2e2a;
+            line-height: 1.6;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 850px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 15px 40px rgba(7, 94, 84, 0.12);
+            overflow: hidden;
+        }
+
+        /* HEADER */
+        .header {
+            background: linear-gradient(135deg, #075E54 0%, #128C7E 100%);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+        }
+
+        .header h1 { font-size: 1.9rem; margin-bottom: 8px; }
+        .header p { opacity: 0.95; font-size: 1.05rem; }
+
+        .trust-badges {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        .trust-badge {
+            background: rgba(255,255,255,0.15);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.82rem;
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255,255,255,0.25);
+        }
+
+        /* PROGRESS BAR */
+        .progress-container {
+            padding: 25px 30px;
+            background: #f8faf9;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .progress-steps {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            position: relative;
+        }
+
+        .progress-steps::before {
+            content: '';
+            position: absolute;
+            top: 15px;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: #d8e3df;
+            z-index: 0;
+        }
+
+        .progress-line {
+            position: absolute;
+            top: 15px;
+            left: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #25D366, #128C7E);
+            z-index: 1;
+            transition: width 0.4s ease;
+            width: 0%;
+        }
+
+        .progress-step {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1;
+        }
+
+        .step-circle {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: white;
+            border: 3px solid #d8e3df;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.85rem;
+            color: #6b7d79;
+            transition: all 0.3s;
+        }
+
+        .progress-step.active .step-circle {
+            background: #25D366;
+            border-color: #25D366;
+            color: white;
+            box-shadow: 0 0 0 4px rgba(37, 211, 102, 0.2);
+        }
+
+        .progress-step.completed .step-circle {
+            background: #28a745;
+            border-color: #28a745;
+            color: white;
+        }
+
+        .step-label {
+            margin-top: 8px;
+            font-size: 0.72rem;
+            color: #6b7d79;
+            text-align: center;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .progress-step.active .step-label { color: #075E54; }
+        .progress-step.completed .step-label { color: #28a745; }
+
+        /* FORM BODY */
+        .form-body { padding: 35px; }
+
+        .form-step {
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .form-step.active { display: block; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .step-title {
+            font-size: 1.4rem;
+            color: #075E54;
+            margin-bottom: 8px;
+            font-weight: 700;
+        }
+
+        .step-subtitle {
+            color: #6b7d79;
+            margin-bottom: 25px;
+            font-size: 0.95rem;
+        }
+
+        /* FORM ELEMENTS */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+        }
+
+        .form-group { margin-bottom: 20px; }
+        .form-group.full-width { grid-column: 1 / -1; }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 7px;
+            font-size: 0.9rem;
+            color: #1a2e2a;
+        }
+
+        label .req { color: #dc3545; margin-left: 2px; }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 11px 14px;
+            border: 1.5px solid #d8e3df;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-family: inherit;
+            transition: all 0.25s;
+            background: white;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #25D366;
+            box-shadow: 0 0 0 3px rgba(37, 211, 102, 0.15);
+        }
+
+        input.error, select.error, textarea.error {
+            border-color: #dc3545;
+            background: #fff5f5;
+        }
+
+        .error-message {
+            color: #dc3545;
+            font-size: 0.82rem;
+            margin-top: 5px;
+            display: none;
+            font-weight: 500;
+        }
+
+        .error-message.active { display: block; }
+
+        textarea { resize: vertical; min-height: 90px; }
+
+        /* CHECKBOXES */
+        .checkbox-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 10px;
+        }
+
+        .check-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            border: 1.5px solid #d8e3df;
+            transition: all 0.2s;
+            background: white;
+        }
+
+        .check-item:hover {
+            background: #f0f2f5;
+            border-color: #25D366;
+        }
+
+        .check-item.selected {
+            background: #f0fdf4;
+            border-color: #25D366;
+            box-shadow: 0 2px 8px rgba(37, 211, 102, 0.15);
+        }
+
+        .check-item input {
+            width: auto;
+            accent-color: #128C7E;
+            transform: scale(1.2);
+            margin: 0;
+        }
+
+        /* NAVIGATION BUTTONS */
+        .step-actions {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+            padding-top: 25px;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .btn {
+            padding: 12px 28px;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-secondary {
+            background: #f0f2f5;
+            color: #6b7d79;
+        }
+
+        .btn-secondary:hover { background: #e0e0e0; }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #25D366, #128C7E);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(37, 211, 102, 0.4);
+        }
+
+        /* SUMMARY */
+        .summary-box {
+            background: #f8faf9;
+            border: 1.5px solid #d8e3df;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .summary-section {
+            margin-bottom: 18px;
+            padding-bottom: 18px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .summary-section:last-child { margin-bottom: 0; border-bottom: none; padding-bottom: 0; }
+
+        .summary-label {
+            font-size: 0.78rem;
+            color: #6b7d79;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+            font-weight: 700;
+        }
+
+        .summary-value {
+            font-size: 0.95rem;
+            color: #1a2e2a;
+            font-weight: 500;
+        }
+
+        /* PRIVACY */
+        .privacy-box {
+            background: #f0f2f5;
+            border: 1px solid #d8e3df;
+            padding: 16px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .privacy-box label {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            cursor: pointer;
+            font-weight: 400;
+        }
+
+        .privacy-box input {
+            width: auto;
+            margin-top: 3px;
+            accent-color: #128C7E;
+            transform: scale(1.2);
+        }
+
+        /* SUCCESS MODAL */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(7, 94, 84, 0.7);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(6px);
+            padding: 20px;
+        }
+
+        .modal-overlay.active { display: flex; animation: fadeIn 0.3s; }
+
+        .modal-content {
+            background: white;
+            padding: 40px;
+            border-radius: 16px;
+            max-width: 480px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 25px 60px rgba(0,0,0,0.3);
+        }
+
+        .modal-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 2.5rem;
+        }
+
+        .modal-content h2 {
+            color: #075E54;
+            margin-bottom: 12px;
+            font-size: 1.5rem;
+        }
+
+        .modal-content p {
+            color: #6b7d79;
+            margin-bottom: 25px;
+        }
+
+        .modal-btn {
+            padding: 14px 32px;
+            background: linear-gradient(135deg, #25D366, #128C7E);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s;
+        }
+
+        .modal-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(37, 211, 102, 0.4); }
+
+        @media (max-width: 640px) {
+            .grid-2 { grid-template-columns: 1fr; }
+            .checkbox-grid { grid-template-columns: 1fr; }
+            body { padding: 10px; }
+            .form-body { padding: 20px; }
+            .step-label { font-size: 0.6rem; }
+            .step-actions { flex-direction: column-reverse; gap: 10px; }
+            .btn { width: 100%; justify-content: center; }
+            .header h1 { font-size: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h1>🏠 Solicitud de Búsqueda</h1>
+        <p>Multiservices Immobilier Maroc</p>
+        <div class="trust-badges">
+            <span class="trust-badge">🇲🇦 Especialistas en Marruecos</span>
+            <span class="trust-badge">⚡ Respuesta en 24h</span>
+            <span class="trust-badge">🔒 Datos protegidos RGPD</span>
+        </div>
+    </div>
+
+    <!-- BARRA DE PROGRESO -->
+    <div class="progress-container">
+        <div class="progress-steps">
+            <div class="progress-line" id="progressLine"></div>
+            <div class="progress-step active" data-progress="1">
+                <div class="step-circle">1</div>
+                <div class="step-label">Datos</div>
+            </div>
+            <div class="progress-step" data-progress="2">
+                <div class="step-circle">2</div>
+                <div class="step-label">Propiedad</div>
+            </div>
+            <div class="progress-step" data-progress="3">
+                <div class="step-circle">3</div>
+                <div class="step-label">Detalles</div>
+            </div>
+            <div class="progress-step" data-progress="4">
+                <div class="step-circle">4</div>
+                <div class="step-label">Contacto</div>
+            </div>
+            <div class="progress-step" data-progress="5">
+                <div class="step-circle">5</div>
+                <div class="step-label">Revisar</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-body">
+        <form id="buyerForm">
+            
+            <!-- PASO 1: INFORMACIÓN PERSONAL -->
+            <div class="form-step active" data-form-step="1">
+                <h2 class="step-title">Información Personal</h2>
+                <p class="step-subtitle">Comencemos con tus datos de contacto</p>
+
+                <div class="grid-2">
+                    <div class="form-group full-width">
+                        <label>Nombre completo <span class="req">*</span></label>
+                        <input type="text" name="nombre" id="nombre" required placeholder="Ej: Ahmed Benali">
+                        <div class="error-message" id="err-nombre">Por favor, introduce tu nombre completo</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Correo electrónico <span class="req">*</span></label>
+                        <input type="email" name="email" id="email" required placeholder="ejemplo@email.com">
+                        <div class="error-message" id="err-email">Introduce un email válido</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Teléfono (WhatsApp) <span class="req">*</span></label>
+                        <input type="tel" name="telefono" id="telefono" required placeholder="+212 6XX XXX XXX">
+                        <div class="error-message" id="err-telefono">Introduce un teléfono válido</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Nacionalidad <span class="req">*</span></label>
+                        <select name="nacionalidad" id="nacionalidad" required>
+                            <option value="">— Seleccionar —</option>
+                            <option value="Marroquí">Marroquí</option>
+                            <option value="Española">Española</option>
+                            <option value="Francesa">Francesa</option>
+                            <option value="Belga">Belga</option>
+                            <option value="Alemana">Alemana</option>
+                            <option value="Otra">Otra</option>
+                        </select>
+                        <div class="error-message" id="err-nacionalidad">Selecciona tu nacionalidad</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Ciudad de residencia actual</label>
+                        <input type="text" name="ciudad_residencia" placeholder="Ej: Madrid, París, Bruselas">
+                    </div>
+                </div>
+
+                <div class="step-actions">
+                    <div></div>
+                    <button type="button" class="btn btn-primary" onclick="nextStep(2)">
+                        Continuar ➔
+                    </button>
+                </div>
+            </div>
+
+            <!-- PASO 2: PREFERENCIAS DE PROPIEDAD -->
+            <div class="form-step" data-form-step="2">
+                <h2 class="step-title">Preferencias de Propiedad</h2>
+                <p class="step-subtitle">¿Qué tipo de propiedad buscas?</p>
+
+                <div class="form-group">
+                    <label>Tipo de propiedad <span class="req">*</span></label>
+                    <select name="tipo_propiedad" id="tipo_propiedad" required>
+                        <option value="">— Seleccionar —</option>
+                        <option value="Casa/Villa">Casa/Villa</option>
+                        <option value="Apartamento">Apartamento/Piso</option>
+                        <option value="Ático">Ático/Penthouse</option>
+                        <option value="Estudio">Estudio</option>
+                        <option value="Terreno">Terreno</option>
+                        <option value="Local comercial">Local comercial</option>
+                        <option value="Oficina">Oficina</option>
+                    </select>
+                    <div class="error-message" id="err-tipo_propiedad">Selecciona el tipo de propiedad</div>
+                </div>
+
+                <div class="form-group">
+                    <label>Ciudad de interés <span class="req">*</span></label>
+                    <select name="ciudad" id="ciudad" required>
+                        <option value="">— Seleccionar —</option>
+                        <option value="Casablanca">Casablanca</option>
+                        <option value="Rabat">Rabat</option>
+                        <option value="Marrakech">Marrakech</option>
+                        <option value="Tánger">Tánger</option>
+                        <option value="Agadir">Agadir</option>
+                        <option value="Fez">Fez</option>
+                        <option value="Essaouira">Essaouira</option>
+                        <option value="Otra">Otra ciudad</option>
+                    </select>
+                    <div class="error-message" id="err-ciudad">Selecciona una ciudad</div>
+                </div>
+
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label>Rango de precio <span class="req">*</span></label>
+                        <select name="precio" id="precio" required>
+                            <option value="">— Seleccionar —</option>
+                            <option value="<500k DH">Menos de 500.000 DH</option>
+                            <option value="500k-1M DH">500.000 - 1.000.000 DH</option>
+                            <option value="1M-2M DH">1.000.000 - 2.000.000 DH</option>
+                            <option value="2M-3M DH">2.000.000 - 3.000.000 DH</option>
+                            <option value=">3M DH">Más de 3.000.000 DH</option>
+                        </select>
+                        <div class="error-message" id="err-precio">Selecciona un rango de precio</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Número de habitaciones <span class="req">*</span></label>
+                        <select name="habitaciones" id="habitaciones" required>
+                            <option value="">— Seleccionar —</option>
+                            <option value="Estudio">Estudio (0 habitaciones)</option>
+                            <option value="1">1 habitación</option>
+                            <option value="2">2 habitaciones</option>
+                            <option value="3">3 habitaciones</option>
+                            <option value="4">4 habitaciones</option>
+                            <option value="5+">5 o más habitaciones</option>
+                        </select>
+                        <div class="error-message" id="err-habitaciones">Selecciona el número de habitaciones</div>
+                    </div>
+                </div>
+
+                <div class="step-actions">
+                    <button type="button" class="btn btn-secondary" onclick="prevStep(1)">
+                        ← Anterior
+                    </button>
+                    <button type="button" class="btn btn-primary" onclick="nextStep(3)">
+                        Continuar ➔
+                    </button>
+                </div>
+            </div>
+
+            <!-- PASO 3: CARACTERÍSTICAS -->
+            <div class="form-step" data-form-step="3">
+                <h2 class="step-title">Características Deseadas</h2>
+                <p class="step-subtitle">Selecciona las características que buscas (opcional)</p>
+
+                <div class="form-group">
+                    <label>Características indispensables</label>
+                    <div class="checkbox-grid">
+                        <label class="check-item">
+                            <input type="checkbox" name="caracteristicas" value="Garaje/Parking">
+                            <span>Garaje/Parking</span>
+                        </label>
+                        <label class="check-item">
+                            <input type="checkbox" name="caracteristicas" value="Terraza/Balcón">
+                            <span>Terraza/Balcón</span>
+                        </label>
+                        <label class="check-item">
+                            <input type="checkbox" name="caracteristicas" value="Jardín">
+                            <span>Jardín</span>
+                        </label>
+                        <label class="check-item">
+                            <input type="checkbox" name="caracteristicas" value="Piscina">
+                            <span>Piscina</span>
+                        </label>
+                        <label class="check-item">
+                            <input type="checkbox" name="caracteristicas" value="Ascensor">
+                            <span>Ascensor</span>
+                        </label>
+                        <label class="check-item">
+                            <input type="checkbox" name="caracteristicas" value="Amueblado">
+                            <span>Amueblado</span>
+                        </label>
+                        <label class="check-item">
+                            <input type="checkbox" name="caracteristicas" value="Aire acondicionado">
+                            <span>Aire acondicionado</span>
+                        </label>
+                        <label class="check-item">
+                            <input type="checkbox" name="caracteristicas" value="Vistas al mar">
+                            <span>Vistas al mar</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Comentarios adicionales</label>
+                    <textarea name="comentarios" placeholder="Cuéntanos más detalles sobre lo que buscas..."></textarea>
+                </div>
+
+                <div class="step-actions">
+                    <button type="button" class="btn btn-secondary" onclick="prevStep(2)">
+                        ← Anterior
+                    </button>
+                    <button type="button" class="btn btn-primary" onclick="nextStep(4)">
+                        Continuar ➔
+                    </button>
+                </div>
+            </div>
+
+            <!-- PASO 4: CONTACTO -->
+            <div class="form-step" data-form-step="4">
+                <h2 class="step-title">Preferencias de Contacto</h2>
+                <p class="step-subtitle">¿Cómo y cuándo podemos contactarte?</p>
+
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label>Mejor forma de contacto <span class="req">*</span></label>
+                        <select name="contacto" id="contacto" required>
+                            <option value="WhatsApp">WhatsApp</option>
+                            <option value="Llamada">Llamada telefónica</option>
+                            <option value="Email">Email</option>
+                            <option value="SMS">SMS</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Plazo de compra <span class="req">*</span></label>
+                        <select name="plazo" id="plazo" required>
+                            <option value="">— Seleccionar —</option>
+                            <option value="Inmediato">Inmediato (menos de 1 mes)</option>
+                            <option value="1-3 meses">1-3 meses</option>
+                            <option value="3-6 meses">3-6 meses</option>
+                            <option value="6-12 meses">6-12 meses</option>
+                            <option value="Solo mirando">Solo estoy explorando</option>
+                        </select>
+                        <div class="error-message" id="err-plazo">Selecciona un plazo</div>
+                    </div>
+                </div>
+
+                <div class="privacy-box">
+                    <label>
+                        <input type="checkbox" name="privacidad" id="privacidad" required>
+                        <span>Acepto la política de privacidad y el tratamiento de mis datos para gestionar mi solicitud <span class="req">*</span></span>
+                    </label>
+                    <div class="error-message" id="err-privacidad">Debes aceptar la política de privacidad</div>
+                </div>
+
+                <div class="step-actions">
+                    <button type="button" class="btn btn-secondary" onclick="prevStep(3)">
+                        ← Anterior
+                    </button>
+                    <button type="button" class="btn btn-primary" onclick="nextStep(5)">
+                        Revisar solicitud ➔
+                    </button>
+                </div>
+            </div>
+
+            <!-- PASO 5: RESUMEN -->
+            <div class="form-step" data-form-step="5">
+                <h2 class="step-title">Revisa tu Solicitud</h2>
+                <p class="step-subtitle">Confirma que todos los datos son correctos antes de enviar</p>
+
+                <div class="summary-box">
+                    <div class="summary-section">
+                        <div class="summary-label">👤 Datos Personales</div>
+                        <div class="summary-value" id="summary-personal">-</div>
+                    </div>
+                    <div class="summary-section">
+                        <div class="summary-label">🏠 Propiedad</div>
+                        <div class="summary-value" id="summary-property">-</div>
+                    </div>
+                    <div class="summary-section">
+                        <div class="summary-label">✨ Características</div>
+                        <div class="summary-value" id="summary-features">-</div>
+                    </div>
+                    <div class="summary-section">
+                        <div class="summary-label">📞 Contacto</div>
+                        <div class="summary-value" id="summary-contact">-</div>
+                    </div>
+                </div>
+
+                <div class="step-actions">
+                    <button type="button" class="btn btn-secondary" onclick="prevStep(4)">
+                        ← Modificar
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                         Enviar por WhatsApp
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- MODAL DE ÉXITO -->
+<div class="modal-overlay" id="successModal">
+    <div class="modal-content">
+        <div class="modal-icon">✅</div>
+        <h2>¡Solicitud Enviada!</h2>
+        <p>Hemos recibido tu solicitud. Te contactaremos en menos de 24 horas.</p>
+        <a href="#" id="waLink" class="modal-btn" target="_blank">Abrir WhatsApp</a>
+    </div>
+</div>
+
+<script>
+    // CONFIGURACIÓN: Cambia este número por el tuyo (con código de país, sin + ni espacios)
+    const WHATSAPP_NUMBER = '212600000000'; 
+
+    let currentStep = 1;
+    const totalSteps = 5;
+
+    // Actualizar barra de progreso
+    function updateProgress() {
+        const progressLine = document.getElementById('progressLine');
+        const percent = ((currentStep - 1) / (totalSteps - 1)) * 100;
+        progressLine.style.width = `${percent}%`;
+
+        document.querySelectorAll('.progress-step').forEach((step, index) => {
+            const stepNum = index + 1;
+            step.classList.remove('active', 'completed');
+            
+            if (stepNum < currentStep) {
+                step.classList.add('completed');
+                step.querySelector('.step-circle').textContent = '✓';
+            } else if (stepNum === currentStep) {
+                step.classList.add('active');
+                step.querySelector('.step-circle').textContent = stepNum;
+            } else {
+                step.querySelector('.step-circle').textContent = stepNum;
+            }
+        });
+    }
+
+    // Validar paso actual
+    function validateStep(stepNum) {
+        const stepContent = document.querySelector(`[data-form-step="${stepNum}"]`);
+        const requiredFields = stepContent.querySelectorAll('[required]');
+        let isValid = true;
+        let firstErrorField = null;
+
+        requiredFields.forEach(field => {
+            const errorEl = document.getElementById(`err-${field.name}`);
+            let fieldValid = true;
+            
+            if (field.type === 'checkbox') {
+                if (!field.checked) fieldValid = false;
+            } else if (field.type === 'email') {
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!field.value || !emailRegex.test(field.value)) fieldValid = false;
+            } else {
+                if (!field.value.trim()) fieldValid = false;
+            }
+
+            if (!fieldValid) {
+                isValid = false;
+                field.classList.add('error');
+                if (errorEl) errorEl.classList.add('active');
+                if (!firstErrorField) firstErrorField = field;
+            } else {
+                field.classList.remove('error');
+                if (errorEl) errorEl.classList.remove('active');
+            }
+        });
+
+        // Hacer foco en el primer campo con error
+        if (firstErrorField) {
+            firstErrorField.focus();
+            firstErrorField.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        return isValid;
+    }
+
+    // Ir al siguiente paso
+    function nextStep(stepNum) {
+        if (!validateStep(currentStep)) {
+            return;
+        }
+
+        document.querySelector(`[data-form-step="${currentStep}"]`).classList.remove('active');
+        currentStep = stepNum;
+        document.querySelector(`[data-form-step="${currentStep}"]`).classList.add('active');
+        updateProgress();
+
+        if (stepNum === 5) {
+            updateSummary();
+        }
+
+        // Scroll suave al inicio del formulario
+        document.querySelector('.form-body').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    // Ir al paso anterior
+    function prevStep(stepNum) {
+        document.querySelector(`[data-form-step="${currentStep}"]`).classList.remove('active');
+        currentStep = stepNum;
+        document.querySelector(`[data-form-step="${currentStep}"]`).classList.add('active');
+        updateProgress();
+        document.querySelector('.form-body').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    // Actualizar resumen
+    function updateSummary() {
+        const fd = new FormData(document.getElementById('buyerForm'));
+        const get = (k) => fd.get(k) || 'No especificado';
+        const getAll = (k) => fd.getAll(k).join(', ') || 'Ninguna seleccionada';
+
+        document.getElementById('summary-personal').innerHTML = `
+            <strong>${get('nombre')}</strong><br>
+             ${get('email')} · 📱 ${get('telefono')}<br>
+            🌍 ${get('nacionalidad')} · ️ ${get('ciudad_residencia') !== 'No especificado' ? get('ciudad_residencia') : 'Sin especificar'}
+        `;
+
+        document.getElementById('summary-property').innerHTML = `
+            🏠 <strong>${get('tipo_propiedad')}</strong> en <strong>${get('ciudad')}</strong><br>
+            💰 Precio: ${get('precio')} · 🛏️ Habitaciones: ${get('habitaciones')}
+        `;
+
+        document.getElementById('summary-features').innerHTML = getAll('caracteristicas');
+
+        document.getElementById('summary-contact').innerHTML = `
+            📞 Contacto: ${get('contacto')} · ⏱️ Plazo: ${get('plazo')}
+        `;
+    }
+
+    // Envío del formulario
+    document.getElementById('buyerForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const fd = new FormData(this);
+        const get = (k) => fd.get(k) || 'N/C';
+        const getAll = (k) => fd.getAll(k).join(', ') || 'Ninguna';
+
+        const msg = `🏠 *NUEVA BÚSQUEDA - MULTISERVICES IMMOBILIER*
+
+👤 *DATOS PERSONALES*
+• Nombre: ${get('nombre')}
+• Email: ${get('email')}
+• Teléfono: ${get('telefono')}
+• Nacionalidad: ${get('nacionalidad')}
+
+🏘️ *PROPIEDAD*
+• Tipo: ${get('tipo_propiedad')}
+• Ciudad: ${get('ciudad')}
+• Precio: ${get('precio')}
+• Habitaciones: ${get('habitaciones')}
+
+✨ *CARACTERÍSTICAS*
+${getAll('caracteristicas')}
+
+📞 *CONTACTO*
+• Preferencia: ${get('contacto')}
+• Plazo: ${get('plazo')}
+• Comentarios: ${get('comentarios') || 'Sin comentarios'}
+
+_Enviado desde formulario web_`;
+
+        const waUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
+
+        document.getElementById('waLink').href = waUrl;
+        document.getElementById('successModal').classList.add('active');
+        
+        // Abrir WhatsApp automáticamente
+        window.open(waUrl, '_blank');
+    });
+
+    // Validación en tiempo real (quita el error al escribir)
+    document.querySelectorAll('input, select, textarea').forEach(field => {
+        field.addEventListener('input', function() {
+            if (this.value.trim()) {
+                this.classList.remove('error');
+                const errorEl = document.getElementById(`err-${this.name}`);
+                if (errorEl) errorEl.classList.remove('active');
+            }
+        });
+    });
+
+    // Feedback visual para checkboxes
+    document.querySelectorAll('.check-item input[type="checkbox"]').forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            if (this.checked) {
+                this.closest('.check-item').classList.add('selected');
+            } else {
+                this.closest('.check-item').classList.remove('selected');
+            }
+        });
+    });
+
+    // Inicializar
+    updateProgress();
+</script>
+
+</body>
+</html>
